@@ -12,7 +12,7 @@ class _HomeScreenState extends State<HomeScreen> {
   String toUnit = 'Kilometers';
   double result = 0.0;
 
-  final Map<String, double> convertionTypes = {
+  final Map<String, double> conversionTypes = {
     'Meters': 1.0,
     'Kilometers': 0.001,
     'Centimeters': 100,
@@ -22,11 +22,13 @@ class _HomeScreenState extends State<HomeScreen> {
 
   void convert() {
     double input = double.tryParse(controller.text) ?? 0;
-    if (input > 0) {
-      result = input * (convertionTypes[toUnit]! / convertionTypes[fromUnit]!);
-    } else {
-      result = 0.0;
+    if (input == 0 && controller.text.isNotEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Please enter a valid number')),
+      );
+      return;
     }
+    result = input * (conversionTypes[toUnit]! / conversionTypes[fromUnit]!);
     setState(() {});
   }
 
@@ -35,7 +37,12 @@ class _HomeScreenState extends State<HomeScreen> {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Colors.lightBlue,
-        title: Center(child: Text('Unit Converter',style: TextStyle(fontSize:30,fontWeight:FontWeight.bold,color: Colors.white),)),
+        title: Center(
+          child: Text(
+            'Unit Converter',
+            style: TextStyle(fontSize: 30, fontWeight: FontWeight.bold, color: Colors.white),
+          ),
+        ),
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
@@ -61,7 +68,7 @@ class _HomeScreenState extends State<HomeScreen> {
                       fromUnit = value!;
                     });
                   },
-                  items: convertionTypes.keys.map((unit) {
+                  items: conversionTypes.keys.map((unit) {
                     return DropdownMenuItem(
                       value: unit,
                       child: Text(unit),
@@ -76,7 +83,7 @@ class _HomeScreenState extends State<HomeScreen> {
                       toUnit = value!;
                     });
                   },
-                  items: convertionTypes.keys.map((unit) {
+                  items: conversionTypes.keys.map((unit) {
                     return DropdownMenuItem(
                       value: unit,
                       child: Text(unit),
@@ -88,18 +95,14 @@ class _HomeScreenState extends State<HomeScreen> {
             SizedBox(height: 20),
             Center(
               child: ElevatedButton(
-                onPressed: () {
-                  if (controller.text.isNotEmpty) {
-                    convert();
-                  }
-                },
+                onPressed: convert,
                 child: Text('Convert'),
               ),
             ),
             SizedBox(height: 20),
             Center(
               child: Text(
-                'Result: $result',
+                'Result: ${result % 1 == 0 ? result.toInt() : result}',
                 style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
               ),
             ),
